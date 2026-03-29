@@ -73,9 +73,9 @@ def read_task(task_id: int, db: Session = Depends(database.get_db)):
     return task
 
 @app.post("/tasks", response_model=schemas.Task)
-async def create_task(task: schemas.TaskCreate, db: Session = Depends(database.get_db)):
+def create_task(task: schemas.TaskCreate, db: Session = Depends(database.get_db)):
     # Simulate a 2-second delay
-    await asyncio.sleep(2)
+    time.sleep(2)
     
     # Verify blocked_by_id if it exists
     if task.blocked_by_id is not None:
@@ -90,9 +90,9 @@ async def create_task(task: schemas.TaskCreate, db: Session = Depends(database.g
     return db_task
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
-async def update_task(task_id: int, task: schemas.TaskUpdate, db: Session = Depends(database.get_db)):
+def update_task(task_id: int, task: schemas.TaskUpdate, db: Session = Depends(database.get_db)):
     # Simulate a 2-second delay
-    await asyncio.sleep(2)
+    time.sleep(2)
     
     db_task = db.query(models.Task).filter(models.Task.id == task_id).first()
     if db_task is None:
@@ -134,7 +134,7 @@ async def update_task(task_id: int, task: schemas.TaskUpdate, db: Session = Depe
     return db_task
 
 @app.delete("/tasks/{task_id}")
-async def delete_task(task_id: int, db: Session = Depends(database.get_db)):
+def delete_task(task_id: int, db: Session = Depends(database.get_db)):
     db_task = db.query(models.Task).filter(models.Task.id == task_id).first()
     if db_task is None:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -158,14 +158,14 @@ class AIPolishResponse(BaseModel):
     description: str
 
 @app.post("/tasks/ai/generate", response_model=List[schemas.Task])
-async def generate_ai_tasks(req: AITaskRequest, db: Session = Depends(database.get_db)):
+def generate_ai_tasks(req: AITaskRequest, db: Session = Depends(database.get_db)):
     if not os.getenv("GEMINI_API_KEY"):
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY environment variable is missing on the server.")
         
     client = genai.Client()
     prompt_text = f"""
     You are an AI Task Planner. Based on the user prompt: "{req.prompt}", 
-    generate a JSON list of 3 structured tasks. Each task must have exactly these keys:
+    generate a JSON list containing ONLY 1 structured task. The task should be simple and easy to understand. Each task must have exactly these keys:
     - title: string
     - description: string
     - due_date: ISO 8601 string (e.g. 2024-05-10T12:00:00Z). Assume today is {datetime.now().isoformat()}
@@ -193,7 +193,11 @@ async def generate_ai_tasks(req: AITaskRequest, db: Session = Depends(database.g
             # Safely create db models
             t['status'] = models.TaskStatus.TODO
             t['blocked_by_id'] = None
-            db_task = models.Task(**t)
+            try:
+                task_data = schemas.TaskCreate(**t)
+                db_task = models.Task(**task_data.model_dump())
+            except Exception as e:
+                raise ValueError(f"Task validation failed: {str(e)}")
             db.add(db_task)
             created_tasks.append(db_task)
             
@@ -207,7 +211,7 @@ async def generate_ai_tasks(req: AITaskRequest, db: Session = Depends(database.g
         raise HTTPException(status_code=500, detail=f"AI parsing failed: {str(e)}\nResponse: {response.text}")
 
 @app.post("/tasks/ai/polish", response_model=AIPolishResponse)
-async def polish_task_text(req: AIPolishRequest):
+def polish_task_text(req: AIPolishRequest):
     if not os.getenv("GEMINI_API_KEY"):
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY environment variable is missing on the server.")
         
