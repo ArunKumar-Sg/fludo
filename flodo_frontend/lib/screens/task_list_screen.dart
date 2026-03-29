@@ -21,10 +21,7 @@ class TaskListScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text('Your Tasks', style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.bold)),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.auto_awesome_rounded, color: Color(0xFF8B5CF6)),
-            onPressed: () => _showAIDialog(context, ref),
-          ),
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: DropdownButtonHideUnderline(
@@ -155,14 +152,31 @@ class TaskListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: const Color(0xFF8B5CF6),
-        foregroundColor: Colors.white,
-        elevation: 8,
-        onPressed: () => context.push('/create'),
-        icon: const Icon(Icons.add_rounded),
-        label: Text('New Task', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-      ).animate().scale(delay: 500.ms).shake(),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.extended(
+            heroTag: 'ai_btn',
+            backgroundColor: const Color(0xFF1E293B),
+            foregroundColor: const Color(0xFF8B5CF6),
+            elevation: 8,
+            onPressed: () => _showAIDialog(context, ref),
+            icon: const Icon(Icons.auto_awesome_rounded),
+            label: Text('AI Generate', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+          ).animate().scale(delay: 400.ms).shake(),
+          const SizedBox(height: 16),
+          FloatingActionButton.extended(
+            heroTag: 'new_btn',
+            backgroundColor: const Color(0xFF8B5CF6),
+            foregroundColor: Colors.white,
+            elevation: 8,
+            onPressed: () => context.push('/create'),
+            icon: const Icon(Icons.add_rounded),
+            label: Text('New Task', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+          ).animate().scale(delay: 500.ms).shake(),
+        ],
+      ),
     );
   }
 
