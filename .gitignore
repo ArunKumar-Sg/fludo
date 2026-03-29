@@ -1,0 +1,59 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.env
+.env.local
+.vscode/
+.idea/
+
+# -------- Python Backend --------
+backend/venv/
+backend/env/
+backend/__pycache__/
+backend/.pytest_cache/
+backend/.coverage
+backend/*.db
+backend/*.sqlite3
+backend/*.log
+
+# -------- Flutter Frontend --------
+flodo_frontend/.dart_tool/
+flodo_frontend/.flutter-plugins
+flodo_frontend/.flutter-plugins-dependencies
+flodo_frontend/.packages
+flodo_frontend/.pub-cache/
+flodo_frontend/.pub/
+flodo_frontend/build/
+flodo_frontend/coverage/
+
+# Android
+flodo_frontend/android/local.properties
+flodo_frontend/android/key.properties
+flodo_frontend/android/.gradle/
+flodo_frontend/android/app/release/
+
+# iOS
+flodo_frontend/ios/.symlinks/
+flodo_frontend/ios/Pods/
+flodo_frontend/ios/Runner.xcworkspace/xcuserdata/
+flodo_frontend/ios/Flutter/Generated.xcconfig
+flodo_frontend/ios/Flutter/app.flx
+flodo_frontend/ios/Flutter/flutter_export_environment.sh
+
+# Web
+flodo_frontend/web/build/
+
+# Dart
+*.dart.js
+*.info.json
+*.js
+*.js_
+*.js.deps
+*.js.map
+
+# Crash reporting
+flutter_crash.log
+flutter_export-environment.sh
